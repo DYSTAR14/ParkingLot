@@ -1,43 +1,62 @@
+import java.util.ArrayList;
+
 public class ParkingLotService {
 
-    ParkAt_ParkingLot parkAt_parkingLot = new ParkAt_ParkingLot();
-    private AirportSecurityPersonal observer;
+    private ArrayList<String> vehiclesList;
+    private ArrayList<Observer> observersList;
+    private int actualCapacity;
+    ParkAtParkingLot parkAt_parkingLot = new ParkAtParkingLot();
     private String vehicleId;
     private int uniqueId;
+    public ParkingLotService(){}
 
-    public ParkingLotService() {
+    public ParkingLotService(int actualCapacity) {
+        this.actualCapacity = actualCapacity;
+        this.vehiclesList = new ArrayList<>();
+        this.observersList = new ArrayList<>();
     }
 
-    public ParkingLotService(AirportSecurityPersonal airportSecurityPersonal) {
-        this.observer = airportSecurityPersonal;
+    public void lotServiceRegister(Observer observer){
+//        this.observer = observer;
+        this.observersList.add(observer);
     }
 
-    public void parkedVehicle(String vehicleId) throws ParkingLotException {
-        uniqueId = (int) (Math.random() * 100);
-        if (this.vehicleId != null)
+    public void parkingVehicle(String vehicleId) throws ParkingLotException {
+        if (isVehicleParked(vehicleId))
+            throw new ParkingLotException("This Vehicle Already Parked");
+        if (this.vehiclesList.size() == this.actualCapacity) {
+            for (Observer observer : observersList) {
+                observer.capacityIsFull();
+            }
             throw new ParkingLotException("Parking Lot Full");
-        this.vehicleId = vehicleId;
-        parkAt_parkingLot.addVehicle(uniqueId, vehicleId);
+        }
+        vehiclesList.add(vehicleId);
     }
 
-    public boolean isParkedVehicle(String vehicleId) {
-        return parkAt_parkingLot.getVehicleParked(uniqueId).equals(vehicleId);
+    public boolean isVehicleParked(String vehicleId) {
+        return this.vehiclesList.contains(vehicleId);
     }
 
-    public boolean isUnparkedVehicle(String vehicleId) {
-        return parkAt_parkingLot.getVehicleParked(uniqueId).equals(vehicleId);
-    }
-
-
-    public boolean isParkingLotFull() {
-        return this.vehicleId != null;
+    public boolean vehicleUnparked(String vehicleId) {
+        if(vehicleId == null) return false;
+        if(this.vehiclesList.contains(vehicleId)){
+            this.vehiclesList.remove(vehicleId);
+            for (Observer observer:observersList) {
+                observer.capacityIsAvailable();
+            }
+            return true;
+        }
+        return false;
     }
 
     public boolean isParkingLotHasFreeSpace() {
         return this.vehicleId == null;
     }
 
-    public boolean onUpdateAirportSecurityPersonal() {
-        return observer.onUpdate(this.vehicleId);
-    }
+//    public boolean onUpdateReport() {
+//        for (Observer observer: observersList) {
+//            return observer.onUpdate(isParkingLotFull());
+//        }
+//        return false;
+//    }
 }

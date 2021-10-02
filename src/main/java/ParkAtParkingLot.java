@@ -1,4 +1,4 @@
-public class ParkAt_ParkingLot {
+public class ParkAtParkingLot {
     String[] parkingLotStore = new String[100];
 
     public void addVehicle(int uniqueId, String vehicaleId) {

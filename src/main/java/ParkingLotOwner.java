@@ -1,4 +1,5 @@
-public class AirportSecurityPersonal implements Observer{
+public class ParkingLotOwner implements Observer{
+
     private boolean isFullCapacity;
 
     @Override
